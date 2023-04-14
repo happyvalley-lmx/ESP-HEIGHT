@@ -29,6 +29,7 @@ void setup()
   u8g2.begin();
   pinMode(2,OUTPUT);
   pinMode(33,OUTPUT);
+  pinMode(39,INPUT);
   digitalWrite(2,1);
   digitalWrite(33,1);
   u8g2.setContrast(48);
@@ -42,6 +43,7 @@ void setup()
   wavePWM.setup(WAVE_LEN);
 }
 
+bool voice_state = false;
 
 void loop() 
 {
@@ -90,7 +92,25 @@ void loop()
     //   }
     // }
   }
-    milli = millis();
-    //write to LED
-    analogWrite(DAC_PIN, wavePWM.getQuadraticValue(milli));
+  if(digitalRead(39) == LOW){
+    delay(50);
+    if(digitalRead(39) == LOW){
+      voice_state = !voice_state;
+      digitalWrite(2,voice_state);
+      while(1)
+      {
+        if(digitalRead(39) == HIGH){
+          break;
+        }
+      }
+    }
+  };
+  if(voice_state)
+    {
+      milli = millis();
+      analogWrite(DAC_PIN, wavePWM.getQuadraticValue(milli));
+    }
+  else{
+    analogWrite(DAC_PIN, 0);
+  }
 }
